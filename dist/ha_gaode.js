@@ -89,16 +89,26 @@ const init_html = `
     --map-table-border: 1px solid var(--divider-color);
     --map-table-header: var(--secondary-text-color);
     --map-table-row-hover: rgba(255, 255, 255, 0.05);
+    position: relative;
+    height: 100%;
+    width: 100%;
   }
 
   .dxAmap .kanban {
     color: var(--primary-text-color);
-    background: var(--map-controls-background);
+    background:  var(--primary-background-color);
     border: var(--map-controls-border);
     border-radius: var(--map-controls-radius);
     padding: var(--map-controls-padding);
     margin: var(--map-controls-margin);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    opacity: 0.98;
+    backdrop-filter: blur(4px);
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 1000;
+    width: 450px;
   }
 
   .flexContainer {
@@ -196,6 +206,12 @@ const init_html = `
   .error-text {
     color: var(--error-color);
     font-size: 0.9em;
+  }
+  .mapContainer {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    z-index: 300;
   }
 </style>
 <div id="dxMapDiv" class="dxAmap" style="height: 100%">
