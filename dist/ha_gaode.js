@@ -96,13 +96,12 @@ const init_html = `
 
   .dxAmap .kanban {
     color: var(--primary-text-color);
-    background:  var(--primary-background-color);
+    background:  rgba(var(--primary-background-color-rgb), 0.8);
     border: var(--map-controls-border);
     border-radius: var(--map-controls-radius);
     padding: var(--map-controls-padding);
     margin: var(--map-controls-margin);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    opacity: 0.8;
     backdrop-filter: blur(4px);
     position: absolute;
     top: 16px;
@@ -230,9 +229,6 @@ const init_html = `
         <div class="section-title">地图操作</div>
         <div style="margin-bottom: 8px; font-size: 0.9em;">
           点击坐标：<span id="click_ll_span" style="user-select: text;"></span>
-        </div>
-        <div style="margin-bottom: 8px;">
-          <input type="text" id="map_search_input" name="map_search" placeholder="搜索地点...">
         </div>
         <div style="margin-bottom: 8px;">
           <div style="display: flex; flex-wrap: wrap; gap: 12px;">
@@ -435,7 +431,7 @@ class Ha_gaode extends HTMLElement {
             var key = zoneKey.replaceAll('\.', '')
             let position = ''
             if (gcj02_longitude && gcj02_latitude) {
-                position = gcj02_longitude + ",\n" + gcj02_latitude
+                position = gcj02_longitude + "," + gcj02_latitude
             }
             trE.innerHTML = `
           <td >${friendly_name}</td>
@@ -501,7 +497,7 @@ class Ha_gaode extends HTMLElement {
             var key = gpsKey.replaceAll('\.', '')
             trE.innerHTML = `
           <td >${friendly_name}</td>
-          <td style='cursor: pointer' id=${key + '_ll'}>${gcj02_longitude + ",\n" + gcj02_latitude}</td>
+          <td style='cursor: pointer' id=${key + '_ll'}>${gcj02_longitude + "," + gcj02_latitude}</td>
           <td>
             <button id=${key + '_oper'} dx_entity_id=${gpsKey}>操作</button>
           </td>
