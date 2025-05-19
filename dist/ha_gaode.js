@@ -1,6 +1,6 @@
 import "https://webapi.amap.com/loader.js"
 
-const VERSION = "V5.1.2.2"
+const VERSION = "V5.1.2.3"
 const CONFIG_DEVICE_TRACKER_INCLUDE = 'device_tracker_include'
 const CONFIG_GAODE_KEY = 'gaode_key'
 const CONFIG_GAODE_KEY_SECURITY_CODE = 'gaode_key_security_code'
