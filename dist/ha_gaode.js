@@ -1,6 +1,6 @@
 import "https://webapi.amap.com/loader.js"
 
-const VERSION = "V5.1.2"
+const VERSION = "V5.1.2.2"
 const CONFIG_DEVICE_TRACKER_INCLUDE = 'device_tracker_include'
 const CONFIG_GAODE_KEY = 'gaode_key'
 const CONFIG_GAODE_KEY_SECURITY_CODE = 'gaode_key_security_code'
@@ -102,13 +102,12 @@ const init_html = `
     padding: var(--map-controls-padding);
     margin: var(--map-controls-margin);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    opacity: 0.98;
+    opacity: 0.8;
     backdrop-filter: blur(4px);
     position: absolute;
     top: 16px;
     left: 16px;
     z-index: 1000;
-    width: 450px;
   }
 
   .flexContainer {
@@ -219,7 +218,7 @@ const init_html = `
     <div style="height: 100%; width: 100%;" id="mapContainer" class="mapContainer"></div>
     
     <!-- Expanded Controls Panel -->
-    <div id="maxDiv" class="kanban" style="width: 300px; max-height: 90vh; overflow-y: auto;">
+    <div id="maxDiv" class="kanban" style="width: 500px; max-height: 90vh; overflow-y: auto;">
       <div class="flexContainer" style="margin-bottom: 12px; justify-content: space-between;">
         <button id="containerMin" class="mdc-icon-button">
           <ha-icon icon="mdi:chevron-left"></ha-icon>
@@ -235,19 +234,23 @@ const init_html = `
         <div style="margin-bottom: 8px;">
           <input type="text" id="map_search_input" name="map_search" placeholder="搜索地点...">
         </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
-          <ha-switch id="satellite_input" style="--switch-checked-color: var(--primary-color);">
-            <span style="margin-left: 4px;">卫星</span>
-          </ha-switch>
-          <ha-switch id="roadnet_input" style="--switch-checked-color: var(--primary-color);">
-            <span style="margin-left: 4px;">路网</span>
-          </ha-switch>
-          <ha-switch id="traffic_input" style="--switch-checked-color: var(--primary-color);">
-            <span style="margin-left: 4px;">交通</span>
-          </ha-switch>
+        <div style="margin-bottom: 8px;">
+          <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center;">
+              <ha-switch id="satellite_input" style="--switch-checked-color: var(--primary-color);"></ha-switch>
+              <span style="margin-left: 8px; font-size: 0.9em;">卫星</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+              <ha-switch id="roadnet_input" style="--switch-checked-color: var(--primary-color);"></ha-switch>
+              <span style="margin-left: 8px; font-size: 0.9em;">路网</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+              <ha-switch id="traffic_input" style="--switch-checked-color: var(--primary-color);"></ha-switch>
+              <span style="margin-left: 8px; font-size: 0.9em;">交通</span>
+            </div>
+          </div>
         </div>
       </div>
-
       <div id="zoneDiv">
         <div class="flexContainer" style="margin-bottom: 8px; justify-content: space-between;">
           <div class="section-title">区域管理</div>
@@ -432,12 +435,12 @@ class Ha_gaode extends HTMLElement {
             var key = zoneKey.replaceAll('\.', '')
             let position = ''
             if (gcj02_longitude && gcj02_latitude) {
-                position = gcj02_longitude + "," + gcj02_latitude
+                position = gcj02_longitude + ",\n" + gcj02_latitude
             }
             trE.innerHTML = `
           <td >${friendly_name}</td>
           <td style='cursor: pointer' id=${key + '_ll'}>${position}</td>
-          <td >${radius}</td>
+          <td >${parseInt(radius)}</td>
           <td>
             <button id=${key + '_edit'} dx_entity_id=${zoneKey}>编辑</button>
             <button ${key === 'zonehome' ? "disabled" : ""} id=${key + '_delete'} dx_entity_id=${zoneKey}>删除</button>
@@ -498,7 +501,7 @@ class Ha_gaode extends HTMLElement {
             var key = gpsKey.replaceAll('\.', '')
             trE.innerHTML = `
           <td >${friendly_name}</td>
-          <td style='cursor: pointer' id=${key + '_ll'}>${gcj02_longitude + "," + gcj02_latitude}</td>
+          <td style='cursor: pointer' id=${key + '_ll'}>${gcj02_longitude + ",\n" + gcj02_latitude}</td>
           <td>
             <button id=${key + '_oper'} dx_entity_id=${gpsKey}>操作</button>
           </td>
