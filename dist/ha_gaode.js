@@ -1,6 +1,6 @@
 import "https://webapi.amap.com/loader.js"
 
-const VERSION = "V5.1.1"
+const VERSION = "V5.1.2"
 const CONFIG_DEVICE_TRACKER_INCLUDE = 'device_tracker_include'
 const CONFIG_GAODE_KEY = 'gaode_key'
 const CONFIG_GAODE_KEY_SECURITY_CODE = 'gaode_key_security_code'
@@ -73,135 +73,250 @@ const random_color = [
 
 const init_html = `
 <style>
-   .dxAmap {
-    .kanban {
-      color: black;
-    }
-   }
-   .flexContainer {
+  .dxAmap {
+    --ha-card-background: var(--card-background-color, var(--primary-background-color));
+    --primary-text-color: var(--primary-text-color);
+    --secondary-text-color: var(--secondary-text-color);
+    --map-controls-background: rgba(30, 30, 30, 0.9);
+    --map-controls-color: var(--primary-text-color);
+    --map-controls-border: 1px solid var(--divider-color);
+    --map-controls-radius: 8px;
+    --map-controls-padding: 8px;
+    --map-controls-margin: 8px;
+    --map-button-background: var(--primary-color);
+    --map-button-color: var(--text-primary-color);
+    --map-button-hover: var(--primary-color);
+    --map-table-border: 1px solid var(--divider-color);
+    --map-table-header: var(--secondary-text-color);
+    --map-table-row-hover: rgba(255, 255, 255, 0.05);
+  }
+
+  .dxAmap .kanban {
+    color: var(--primary-text-color);
+    background: var(--map-controls-background);
+    border: var(--map-controls-border);
+    border-radius: var(--map-controls-radius);
+    padding: var(--map-controls-padding);
+    margin: var(--map-controls-margin);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .flexContainer {
     display: flex;
     align-items: center;
-   }
-   .amap-marker {
+  }
+
+  .amap-marker {
     position: absolute;
     left: 0;
     top: 0;
   }
+
   .amap-marker-label {
     position: absolute;
     z-index: 2;
-    background-color: #22884f;
-    color: #fff;
+    background-color: var(--primary-color);
+    color: var(--text-primary-color);
     white-space: nowrap;
     cursor: default;
     padding: 3px;
     font-size: 12px;
     line-height: 14px;
     border: 0;
+    border-radius: 4px;
+  }
+
+  button {
+    background-color: var(--map-button-background);
+    color: var(--map-button-color);
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin: 2px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: var(--map-button-hover);
+    opacity: 0.9;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  input[type="text"],
+  input[type="datetime-local"] {
+    background-color: var(--input-background-color, rgba(255, 255, 255, 0.05));
+    color: var(--primary-text-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 4px;
+    padding: 6px;
+    margin: 4px 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 4px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    color: var(--primary-text-color);
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: var(--map-table-border);
+  }
+
+  tr:hover {
+    background-color: var(--map-table-row-hover);
+  }
+
+  th {
+    color: var(--map-table-header);
+    font-weight: 500;
+  }
+
+  .section-title {
+    font-size: 1.1em;
+    margin: 8px 0;
+    color: var(--primary-text-color);
+    font-weight: 500;
+  }
+
+  .error-text {
+    color: var(--error-color);
+    font-size: 0.9em;
   }
 </style>
 <div id="dxMapDiv" class="dxAmap" style="height: 100%">
-  <div style="display: flex;height: 100%">
-    <div style="height: 100%;width: 100%;" id="mapContainer" class="mapContainer"></div>
-    <div id="maxDiv" class="kanban" style="flex: 1;position: absolute;top: 56px; left: 0px;background-color: white;z-index: 5;padding: 8px">
-      <div class="flexContainer" style="margin-bottom: 8px">
-        <button id="containerMin" style="margin-right: 8px">最小化</button>
-        <div>版本：${VERSION}</div>
+  <div style="display: flex; height: 100%; position: relative;">
+    <div style="height: 100%; width: 100%;" id="mapContainer" class="mapContainer"></div>
+    
+    <!-- Expanded Controls Panel -->
+    <div id="maxDiv" class="kanban" style="width: 300px; max-height: 90vh; overflow-y: auto;">
+      <div class="flexContainer" style="margin-bottom: 12px; justify-content: space-between;">
+        <button id="containerMin" class="mdc-icon-button">
+          <ha-icon icon="mdi:chevron-left"></ha-icon>
+        </button>
+        <div style="font-size: 0.9em; color: var(--secondary-text-color)">版本：${VERSION}</div>
       </div>
 
-      <div style="margin-bottom: 8px">
-        <div style="display: flex;align-items: center;">
-          <div style="margin-right: 8px">地图操作</div>
-          <div>您刚刚点击了坐标：<span id="click_ll_span" style="user-select: text;"></span></div>
+      <div style="margin-bottom: 16px;">
+        <div class="section-title">地图操作</div>
+        <div style="margin-bottom: 8px; font-size: 0.9em;">
+          点击坐标：<span id="click_ll_span" style="user-select: text;"></span>
         </div>
-        <div>
-          地图搜索：<input type="text" id="map_search_input" name="map_search" >
+        <div style="margin-bottom: 8px;">
+          <input type="text" id="map_search_input" name="map_search" placeholder="搜索地点...">
         </div>
-        <div style="display: flex;align-items: center;justify-content: start;">
-          <div style="display: flex;align-items: center;margin-right: 8px">
-            <input type="checkbox" id="satellite_input" name="satellite" >
-            <span>卫星</span>
-          </div>
-          <div style="display: flex;align-items: center;margin-right: 8px">
-            <input type="checkbox" id="roadnet_input" name="roadnet" >
-            <span>路网</span>
-          </div>
-          <div style="display: flex;align-items: center;margin-right: 8px">
-            <input type="checkbox" id="traffic_input" name="traffic" >
-            <span>实时交通</span>
-          </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+          <ha-switch id="satellite_input" style="--switch-checked-color: var(--primary-color);">
+            <span style="margin-left: 4px;">卫星</span>
+          </ha-switch>
+          <ha-switch id="roadnet_input" style="--switch-checked-color: var(--primary-color);">
+            <span style="margin-left: 4px;">路网</span>
+          </ha-switch>
+          <ha-switch id="traffic_input" style="--switch-checked-color: var(--primary-color);">
+            <span style="margin-left: 4px;">交通</span>
+          </ha-switch>
         </div>
       </div>
 
-      <div id="zoneDiv" >
-        <div class="flexContainer" style="margin-bottom: 4px;">
-          <div style="flex: 1">Zone 位置列表</div>
-          <button id="zone_add">添加</button>
+      <div id="zoneDiv">
+        <div class="flexContainer" style="margin-bottom: 8px; justify-content: space-between;">
+          <div class="section-title">区域管理</div>
+          <button id="zone_add" class="mdc-icon-button">
+            <ha-icon icon="mdi:plus"></ha-icon>
+          </button>
         </div>
 
-        <table border="1" id="zoneContainer">
+        <table id="zoneContainer" style="margin-bottom: 16px;"></table>
 
-        </table>
+        <div style="display: none; margin-bottom: 16px;" id="zoneSet">
+          <div class="section-title" style="margin-bottom: 8px;">区域设置</div>
 
-        <div style="display: none;margin-bottom: 8px;" id="zoneSet">
-          <div style="margin-bottom: 4px;">位置设置</div>
-
-          <div id="zone_id_div" style="margin-bottom: 4px;">
-            <span>id：</span>
-            <input disabled="true" id="entity_id_post_input" type="text" name="entity_id_post" />
+          <div id="zone_id_div" style="margin-bottom: 8px; display: none;">
+            <div style="font-size: 0.9em; margin-bottom: 4px;">ID</div>
+            <input disabled id="entity_id_post_input" type="text" name="entity_id_post">
           </div>
-          <div style="margin-bottom: 4px;">
-            <span>展示名称：</span>
-            <input id="friendly_name_input" type="text" name="friendly_name" />
+          
+          <div style="margin-bottom: 8px;">
+            <div style="font-size: 0.9em; margin-bottom: 4px;">名称</div>
+            <input id="friendly_name_input" type="text" name="friendly_name" placeholder="输入区域名称">
           </div>
-          <div style="margin-bottom: 4px;">
-            <span>经纬度：</span>
-            <input id="ll_input" type="text" name="ll" />
+          
+          <div style="margin-bottom: 8px;">
+            <div style="font-size: 0.9em; margin-bottom: 4px;">经纬度</div>
+            <input id="ll_input" type="text" name="ll" placeholder="经度,纬度">
           </div>
-          <div style="margin-bottom: 4px;">
-            <span>范围：</span>
-            <input id="radius_input" type="text" name="radius" />
-            <input style="display: none;" id="polygon_input" type="text" name="polygon" />
-            <button id="change_to_polygon">多边形</button>
-            <button id="change_to_radius">圆形</button>
+          
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 0.9em; margin-bottom: 4px;">范围</div>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <input id="radius_input" type="text" name="radius" placeholder="半径(米)" style="flex: 1;">
+              <button id="change_to_polygon">多边形</button>
+              <button id="change_to_radius">圆形</button>
+            </div>
+            <input style="display: none;" id="polygon_input" type="text" name="polygon">
           </div>
-          <div style="margin-bottom: 4px;">
+          
+          <div style="display: flex; justify-content: flex-end; gap: 8px;">
             <button id="zoneSetCancel">取消</button>
-            <button id="zoneSetCommit">提交</button>
+            <button id="zoneSetCommit" style="background-color: var(--success-color);">保存</button>
           </div>
         </div>
       </div>
 
-      <div id="gpsDiv" style="margin-bottom: 8px">
-        <div style="flex: 1">GPS 位置列表</div>
-        <table style="margin-bottom: 8px" border="1" id="gpsList">
-
-        </table>
+      <div id="gpsDiv">
+        <div class="section-title" style="margin-bottom: 8px;">设备轨迹</div>
+        <table id="gpsList" style="margin-bottom: 16px;"></table>
+        
         <div style="display: none" id="gps_set">
-          <div>GPS操作</div>
+          <div class="section-title" style="margin-bottom: 8px;">轨迹设置</div>
 
           <div style="display: none">
-            <input id="gps_entity_id_post_input" type="text" name="gps_entity_id_post" />
+            <input id="gps_entity_id_post_input" type="text" name="gps_entity_id_post">
           </div>
-          <div style="margin-bottom: 8px;display: flex;align-items: center;">
-            <span>名称：</span>
-            <span style="margin-right: 8px; flex: 1;" id="gps_friendly_name_div"></span>
-            <button id="gps_set_cancel">取消操作</button>
+          
+          <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-size: 0.9em; margin-bottom: 4px;">设备名称</div>
+              <div id="gps_friendly_name_div" style="font-weight: 500;"></div>
+            </div>
+            <button id="gps_set_cancel">取消</button>
           </div>
-          <div style="margin-bottom: 8px;">
-            <div style="margin-bottom: 4px;">
-              <input id="trajectory_start_datetime" type="datetime-local"> ~ <input id="trajectory_end_datetime" type="datetime-local">
+          
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 0.9em; margin-bottom: 4px;">时间范围</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px;">
+              <input id="trajectory_start_datetime" type="datetime-local">
+              <input id="trajectory_end_datetime" type="datetime-local">
             </div>
-            <div style="display: flex;align-items: center;">
-              <div style="flex: 1;color: red;" id="trajectory_error" ></div>
-              <button id="gps_set_trajectory">绘制轨迹</button>
-            </div>
+            <div id="trajectory_error" class="error-text"></div>
+          </div>
+          
+          <div style="display: flex; justify-content: flex-end;">
+            <button id="gps_set_trajectory" style="background-color: var(--success-color);">绘制轨迹</button>
           </div>
         </div>
       </div>
     </div>
-    <div id="minDiv" class="kanban" style="flex: 1;position: absolute;top: 56px; left: 0px;background-color: white;z-index: 5;padding: 8px;display: none">
-        <button id="containerMax">还原</button>
+    
+    <!-- Minimized Controls Panel -->
+    <div id="minDiv" class="kanban" style="display: none;">
+      <button id="containerMax" class="mdc-icon-button">
+        <ha-icon icon="mdi:chevron-right"></ha-icon>
+      </button>
     </div>
   </div>
 </div>
@@ -585,6 +700,13 @@ class Ha_gaode extends HTMLElement {
         this.gpsEdit = true
         const trajectory_start_datetime = this.querySelector("#trajectory_start_datetime")
         const trajectory_end_datetime = this.querySelector("#trajectory_end_datetime")
+        // 设置结束时间为当前时间
+        const endDate = new Date();
+        trajectory_end_datetime.value = this.to_datetime_string(endDate);
+		// 设置开始时间为今天0点
+        const startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+        trajectory_start_datetime.value = this.to_datetime_string(startDate);
         if (this.config[CONFIG_DEFAULT_TRA_TIME]) {
             const date = new Date()
             trajectory_end_datetime.value = this.to_datetime_string(date);
@@ -939,12 +1061,14 @@ class Ha_gaode extends HTMLElement {
         return null
     }
     to_datetime_string(date) {
+         if (!date) return '';
         var year = date.getFullYear();
         var month = ('0' + (date.getMonth() + 1)).slice(-2);
         var day = ('0' + date.getDate()).slice(-2);
         var hours = ('0' + date.getHours()).slice(-2);
         var minutes = ('0' + date.getMinutes()).slice(-2);
-        return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+        // return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
     _transform_polygon_2_array(polygon) {
         console.log(polygon)
