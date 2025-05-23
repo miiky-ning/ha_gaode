@@ -106,7 +106,7 @@ const init_html = `
     position: absolute;
     top: 16px;
     left: 16px;
-    z-index: 1000;
+    z-index: 5;
   }
 
   .flexContainer {
@@ -209,7 +209,7 @@ const init_html = `
     height: 100%;
     width: 100%;
     position: relative;
-    z-index: 300;
+    z-index: 1;
   }
 </style>
 <div id="dxMapDiv" class="dxAmap" style="height: 100%">
