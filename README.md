@@ -68,8 +68,15 @@ tip: 可直接点击地图设置经纬度
 
 # 安装
 ## HACS 安装
+### 原版安装方式
 1. HACS > 前端 > 浏览并下载存储库 > 搜索 ```dxgaodemapcard```，点击下载
 2. 参见`手动安装`第三步及以后
+### 我的修改版
+1. HACS > 右上角┇ > Custom repositories >
+   Repositories:https://github.com/miiky-ning/ha_gaode
+   Type: AppDeamon
+2.HACS > 前端 > 浏览并下载存储库 > 搜索 ```dxgaodemapcard```，点击下载
+3.参见`手动安装`第三步及以后
 
 ## 手动安装
 1. 下载 `dist\ha_gaode.js`
