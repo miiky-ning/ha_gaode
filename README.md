@@ -44,7 +44,9 @@
   + 修复路径轨迹地图不能拖动的问题
 + v5.1.1
   + 地图搜索结果自动打点标识
-
++ v5.1.2
+  + 美化看板界面
+  + 轨迹选择自动获取填入当日时间
 **tips: 需要用单卡片模式, 也就是说仪表盘只能是本卡片, 不然显示效果不全!**
 
 ## 预览
@@ -72,11 +74,9 @@ tip: 可直接点击地图设置经纬度
 1. HACS > 前端 > 浏览并下载存储库 > 搜索 ```dxgaodemapcard```，点击下载
 2. 参见`手动安装`第三步及以后
 ### 我的修改版
-1. HACS > 右上角┇ > Custom repositories >
-   Repositories:https://github.com/miiky-ning/ha_gaode
-   Type: AppDeamon
-2.HACS > 前端 > 浏览并下载存储库 > 搜索 ```dxgaodemapcard```，点击下载
-3.参见`手动安装`第三步及以后
+1. HACS > 右上角┇ > Custom repositories > Repositories:https://github.com/miiky-ning/ha_gaode > Type: AppDeamon
+2. HACS > 前端 > 浏览并下载存储库 > 搜索 ```dxgaodemapcard```，点击下载
+3. 参见`手动安装`第三步及以后
 
 ## 手动安装
 1. 下载 `dist\ha_gaode.js`
